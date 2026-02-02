@@ -695,10 +695,17 @@ class AutoencoderKLWan(ModelMixin, ConfigMixin, FromOriginalModelMixin):
 
         model = cls(**filter_kwargs(cls, additional_kwargs))
         if pretrained_model_path.endswith(".safetensors"):
-            from safetensors.torch import load_file, safe_open
+            from safetensors.torch import load_file
             state_dict = load_file(pretrained_model_path)
         else:
-            state_dict = torch.load(pretrained_model_path, map_location="cpu", weights_only=False)
+            try:
+                state_dict = torch.load(pretrained_model_path, map_location="cpu", weights_only=False)
+            except Exception as e:
+                if "UnpicklingError" in type(e).__name__ or "invalid load key" in str(e):
+                    from safetensors.torch import load_file
+                    state_dict = load_file(pretrained_model_path)
+                else:
+                    raise
         tmp_state_dict = {} 
         for key in state_dict:
             tmp_state_dict["model." + key] = state_dict[key]
