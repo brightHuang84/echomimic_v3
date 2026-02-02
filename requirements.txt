@@ -27,6 +27,7 @@ diffusers>=0.30.1
 transformers>=4.46.2
 moviepy==2.2.1
 tensorflow>=2.15.0
+pyloudnorm
 retina-face==0.0.17
 librosa
 mmgp
