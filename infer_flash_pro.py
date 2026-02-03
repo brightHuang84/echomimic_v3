@@ -212,6 +212,10 @@ def main():
     wav2vec_feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained(wav2vec_model_dir, local_files_only=True)
 
     device = set_multi_gpus_devices(ulysses_degree, ring_degree)
+    if device.type == "cpu" and torch.cuda.is_available():
+        device = torch.device("cuda", 0)
+        print(">>> [DEBUG] overridden device to", device)
+    print(">>> [DEBUG] device =", device)
     config = OmegaConf.load(config_path)
 
     transformer = WanTransformer.from_pretrained(
